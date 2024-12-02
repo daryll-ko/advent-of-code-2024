@@ -13,7 +13,6 @@ ok l cmp ohno = case l of
           else not ohno && (ok (h2 : h3 : t) cmp True || ok (h1 : h3 : t) cmp True)
       else not ohno && (ok (h1 : h3 : t) cmp True || ok (h1 : h2 : t) cmp True)
   [h1, h2] ->
-    -- 2 elements
     (cmp h1 h2 && 1 <= abs (h1 - h2) && abs (h1 - h2) <= 3) || not ohno
   _ -> True
 
