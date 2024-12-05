@@ -1,4 +1,5 @@
 *
 !README.md
+!*.gleam
 !*.hs
 !.gitignore
