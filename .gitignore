@@ -3,4 +3,5 @@
 !*.gleam
 !*.hs
 !*.nim
+!*.py
 !.gitignore
