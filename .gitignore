@@ -1,7 +1,1 @@
-*
-!README.md
-!*.gleam
-!*.hs
-!*.nim
-!*.py
-!.gitignore
+*.txt
