@@ -1,12 +1,4 @@
 from dataclasses import dataclass
-from enum import Enum, auto
-
-
-class Dir(Enum):
-    EAST = auto()
-    SOUTH = auto()
-    WEST = auto()
-    NORTH = auto()
 
 
 @dataclass
