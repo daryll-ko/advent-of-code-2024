@@ -26,63 +26,52 @@ def get_input() -> Inp:
 def solve(inp: Inp) -> Outp:
     r, c = len(inp.grid), len(inp.grid[0])
 
-    def within_bounds(i: int, j: int) -> bool:
-        return 0 <= i < r and 0 <= j < c
-
     si, sj, ei, ej = -1, -1, -1, -1
+    free = []
 
     for i in range(r):
         for j in range(c):
             if inp.grid[i][j] == "S":
                 si, sj = i, j
-            elif inp.grid[i][j] == "E":
+            if inp.grid[i][j] == "E":
                 ei, ej = i, j
+            if inp.grid[i][j] != "#":
+                free.append((i, j))
 
     assert si != -1 and ei != -1
 
-    all_dis = {DEF: [[INF for _ in range(c)] for _ in range(r)]}
-    q = deque()
+    all_dis = {
+        start: [[INF for _ in range(c)] for _ in range(r)]
+        for start in [(si, sj), (ei, ej)]
+    }
 
-    all_dis[DEF][si][sj] = 0
-    q.append(((si, sj), DEF))
+    for i, j in [(si, sj), (ei, ej)]:
+        q = deque()
 
-    while len(q) > 0:
-        (ci, cj), cheat = q.popleft()
+        all_dis[(i, j)][i][j] = 0
+        q.append((i, j))
 
-        if cheat == DEF:  # can still cheat
+        while len(q) > 0:
+            ci, cj = q.popleft()
+
             for di, dj in DIJ:
-                ni, nj, nni, nnj = ci + di, cj + dj, ci + 2 * di, cj + 2 * dj
+                ni, nj = ci + di, cj + dj
 
-                if not (
-                    within_bounds(nni, nnj)
-                    and inp.grid[ni][nj] == "#"
-                    and inp.grid[nni][nnj] != "#"
-                    and all_dis[DEF][nni][nnj] == INF
+                if (
+                    inp.grid[ni][nj] != "#"
+                    and all_dis[(i, j)][ni][nj] > all_dis[(i, j)][ci][cj] + 1
                 ):
-                    continue
-
-                new_cheat = ((ni, nj), (nni, nnj))
-                all_dis[new_cheat] = [
-                    [all_dis[DEF][i][j] for j in range(c)] for i in range(r)
-                ]
-
-                all_dis[new_cheat][nni][nnj] = all_dis[DEF][ci][cj] + 2
-                q.append(((nni, nnj), new_cheat))
-
-        for di, dj in DIJ:
-            ni, nj = ci + di, cj + dj
-
-            if (
-                inp.grid[ni][nj] != "#"
-                and all_dis[cheat][ni][nj] > all_dis[cheat][ci][cj] + 1
-            ):
-                all_dis[cheat][ni][nj] = all_dis[cheat][ci][cj] + 1
-                q.append(((ni, nj), cheat))
+                    all_dis[(i, j)][ni][nj] = all_dis[(i, j)][ci][cj] + 1
+                    q.append((ni, nj))
 
     ans = 0
-    for dis in all_dis.values():
-        if all_dis[DEF][ei][ej] - dis[ei][ej] >= 100:
-            ans += 1
+
+    for i1, j1 in free:
+        for i2, j2 in free:
+            if (i1, j1) != (i2, j2) and abs(i1 - i2) + abs(j1 - j2) <= 2:
+                optimized = all_dis[(si, sj)][i1][j1] + 2 + all_dis[(ei, ej)][i2][j2]
+                if all_dis[(si, sj)][ei][ej] - optimized >= 100:
+                    ans += 1
 
     return Outp(ans)
 
